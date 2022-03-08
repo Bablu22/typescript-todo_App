@@ -1,0 +1,8 @@
+.todo h1{
+    background-color: rgb(8, 8, 58);
+    width: 100%;
+    text-align: center;
+    margin-top: 0;
+    padding: 10px 0;
+    color: white;
+}

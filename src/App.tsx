@@ -1,24 +1,103 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Button, Container, List, TextField } from '@mui/material';
+import { Box } from '@mui/system';
+import Header from './Components/Header/Header';
+import AddIcon from '@mui/icons-material/Add';
+import './App.css'
+import { IconButton, ListItem, ListItemText } from '@mui/material';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+
+interface ITodos {
+  id: number;
+  text: string;
+}
 
 function App() {
+
+
+  const [task, setTask] = useState<string>("")
+  const [id, setId] = useState<number>(0)
+  const [todos, setTodos] = useState<ITodos[]>([])
+
+
+
+  const getInputValue = (event: ChangeEvent<HTMLInputElement>): void => {
+    setTask(event.target.value)
+    const id: number = Math.floor(Math.random() * 100000000)
+    setId(id)
+  }
+
+
+
+  const addTask = (): void => {
+    const newTask = { text: task, id: id }
+    setTodos([...todos, newTask,])
+    localStorage.setItem('todos', JSON.stringify([...todos, newTask]))
+    setTask("")
+
+  }
+
+
+  useEffect(() => {
+    const data: any = JSON.parse(localStorage.getItem("todos") || "")
+    setTodos(data)
+  }, [])
+
+
+
+  const deleteTask = (id: number): void => {
+    const task: any = todos.filter(task => task.id !== id)
+    setTodos(task)
+    localStorage.setItem('todos', JSON.stringify(task))
+  }
+
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <Container maxWidth="lg">
+        <Box sx={{ bgcolor: '#ecf0f1', paddingBottom: '100px' }}>
+          <div className='form'>
+            <TextField
+              value={task}
+              onChange={getInputValue}
+              className='input'
+              id="demo-helper-text-aligned"
+              label="Type Something..."
+            />
+            <Button
+              onClick={addTask}
+              className='btn'
+              variant="contained"
+              startIcon={<AddIcon />}
+            >Add
+            </Button>
+          </div>
+          <div className='task-container'>
+            <div>
+              {
+                todos.map((todo: ITodos) => {
+                  return <List className='task' sx={{ width: '100%', maxWidth: 380, bgcolor: 'background.paper' }}>
+                    <ListItem
+
+                      disableGutters
+                      secondaryAction={
+                        <IconButton sx={{ color: 'red' }} onClick={() => deleteTask(todo.id)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      }
+                    >
+                      <ListItemText primary={`${todo.text}`} />
+                    </ListItem>
+                  </List>
+                })
+              }
+            </div>
+          </div>
+        </Box>
+      </Container>
     </div>
   );
 }
