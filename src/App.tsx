@@ -15,10 +15,22 @@ interface ITodos {
 
 function App() {
 
+  const getValue = () => {
+    const data: any = localStorage.getItem("todos") || ""
+
+    if (data) {
+      return JSON.parse(localStorage.getItem("todos") || "")
+    }
+    else {
+      return []
+    }
+  }
 
   const [task, setTask] = useState<string>("")
   const [id, setId] = useState<number>(0)
-  const [todos, setTodos] = useState<ITodos[]>([])
+  const [todos, setTodos] = useState<ITodos[]>(getValue())
+
+
 
 
 
@@ -36,13 +48,10 @@ function App() {
     localStorage.setItem('todos', JSON.stringify([...todos, newTask]))
     setTask("")
 
+
   }
 
 
-  useEffect(() => {
-    const data: any = JSON.parse(localStorage.getItem("todos") || "")
-    setTodos(data)
-  }, [])
 
 
 
@@ -76,25 +85,23 @@ function App() {
             </Button>
           </div>
           <div className='task-container'>
-            <div>
-              {
-                todos.map((todo: ITodos) => {
-                  return <List className='task' sx={{ width: '100%', maxWidth: 380, bgcolor: 'background.paper' }}>
-                    <ListItem
+            {
+              todos.map((todo: ITodos) => {
+                return <List className='task' sx={{ width: '100%', maxWidth: 380, bgcolor: 'background.paper' }}>
+                  <ListItem
 
-                      disableGutters
-                      secondaryAction={
-                        <IconButton sx={{ color: 'red' }} onClick={() => deleteTask(todo.id)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      }
-                    >
-                      <ListItemText primary={`${todo.text}`} />
-                    </ListItem>
-                  </List>
-                })
-              }
-            </div>
+                    disableGutters
+                    secondaryAction={
+                      <IconButton sx={{ color: 'red' }} onClick={() => deleteTask(todo.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemText primary={`${todo.text}`} />
+                  </ListItem>
+                </List>
+              })
+            }
           </div>
         </Box>
       </Container>
